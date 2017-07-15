@@ -5,11 +5,11 @@ body {
     font-family: arial, sans-serif;
 }
 
-#main, #chats {
+#main {
     width: 500px;
     margin: auto;
     text-align: left;
-    background: white;
+    background: black;
     padding: 50px 60px;
     border: solid #ddd;
     border-width: 0 1px 1px 1px;
@@ -53,6 +53,9 @@ form {
 }
 
 form input[type=text] {
+    background-color: rgba(72, 72, 72, 1);
+    color: white;
+    border-color: yellow;
     margin-right: 10px;
     width: 70%;
     font-size: 12px;
@@ -62,7 +65,8 @@ form input[type=text] {
 .chat {
     padding: 5px;
     margin-bottom: 5px;
-    background-color: #eee;
+    background-color: #FFF200;
+    overflow: auto;
 }
 
 .chat .username {
@@ -72,7 +76,7 @@ form input[type=text] {
 }
 
 .chat:hover {
-    background-color: #ddd;
+    background-color: red;
 }
 
 .spinner {
@@ -88,5 +92,21 @@ form input[type=text] {
 .friend {
     color: #fff;
     background-color: black;
+    border-radius:5px;
+    padding:10px;
+}
+
+.batFriend {
+    height:19px;
+    width:30px;
+    background-image: url("../images/batman.png");
+    display:none;
+    float:left;
+}
+#rooms {
+    color: white;
+}
+h1 {
+    color: white;
 }
 

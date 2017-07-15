@@ -2,7 +2,7 @@
 
 class ChatterClient {
   constructor() {
-    this.server = 'http://parse.sfm8.hackreactor.com/chatterbox/classes/messages' + '?order=-updatedAt';
+    this.server = 'http://parse.sfm8.hackreactor.com/chatterbox/classes/messages' + '?order=-updatedAt&limit=1000' ;
     this.$batFeed = $('#chats');
     this.user = {users: []};
 
@@ -41,11 +41,14 @@ class ChatterClient {
         // take care of bizzzness
         var results = data.results.reverse().filter(function(item) {
           return (item.hasOwnProperty('text') && item.text &&
-            item.hasOwnProperty('roomname') &&
-            item.hasOwnProperty('username'));
+            item.hasOwnProperty('roomname') && item.roomname &&
+            item.hasOwnProperty('username') && item.username);
         });
         
-        console.log(results);
+        results.forEach((item) => {
+          this.renderRoom(item.roomname);
+        });
+
         results.forEach((item) => {
           this.renderMessage(item);
         });
@@ -59,30 +62,62 @@ class ChatterClient {
     this.$batFeed.empty();
   }
   renderMessage({username, text, roomname, updatedAt = 'The Beginning'}) {
+    if (roomname !== $('#roomSelect').val()) {
+      return;
+    }
+
     var $batSignal = $('<div></div>');
 
-    var $userName = $(`<a href="#" class="username" data-username="${username}">${username}:</a>`);
-    $userName.on('click', (event) => {
+    $batSignal.append($('<div class="batFriend"></div>'));
+
+    var $batName = $(`<a href="#" class="username" data-username="${username}"></a>`);
+    $batName.text(`${username}:`);
+    $batName.on('click', (event) => {
       this.handleUsernameClick(event.target);
       event.preventDefault();
     });
 
-    $batSignal.html($userName);
+    $batSignal.append($batName);
     
     var $text = $('<div class="userMessage"></div>');
-    $text.append(document.createTextNode(text));
+    $text.text(text.trim());
     // add time later
     $batSignal.append($text);
     $batSignal.addClass('chat');
     this.$batFeed.prepend($batSignal);
   }
-  renderRoom(roomName) {
-    var $optionThing = $(`<option value="${roomName}">${roomName}</option>`);
+  renderRoom(batRoom) {
+    batRoom = batRoom.trim();
+    if (!batRoom) {
+      return;
+    }
+    let rooms = $('#roomSelect option');
+    for (let i = 0; i < rooms.length; i++) {
+      if ($(rooms[i]).val() === batRoom) { 
+        return; 
+      }
+    }
+    // if batRoom is empty (or all spaces)
+    var $optionThing = $(`<option value="${batRoom}">${batRoom}</option>`);
     $('#roomSelect').append($optionThing);
+
+    var options = $('#roomSelect option');
+    var arr = options.map(function(_, o) { return { t: $(o).text(), v: o.value }; }).get();
+    arr.sort(function(o1, o2) { return o1.t > o2.t ? 1 : o1.t < o2.t ? -1 : 0; });
+    options.each(function(i, o) {
+      o.value = arr[i].v;
+      $(o).text(arr[i].t);
+    });
+
   }
 
   handleUsernameClick(userNode) {
-    $(userNode).toggleClass('friend');
+    $('#chats').find('.username').each(function(index, node) {
+      if ($(node).data('username') === $(userNode).data('username')) {
+        $(node).siblings('.batFriend').fadeToggle();
+        $(node).toggleClass('friend');
+      }
+    });
   }
   handleSubmit() {
     var batText = $('#message').val();
@@ -99,5 +134,9 @@ $(function() {
   $('#send').on('submit', (event) => {
     app.handleSubmit();
     event.preventDefault();
+  });
+  $('#roomSelect').on('change', function(event) {
+    app.clearMessages();
+    app.fetch();
   });
 });
