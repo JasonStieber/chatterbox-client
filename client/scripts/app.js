@@ -9,7 +9,10 @@ class ChatterClient {
     this.init();
   }
   init() {
+    this.clearMessages();
     this.fetch();
+
+    setTimeout(() => this.init(), 15000);
   }
   _error(data) {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -134,9 +137,26 @@ $(function() {
   $('#send').on('submit', (event) => {
     app.handleSubmit();
     event.preventDefault();
+    $('#message').val('');
   });
   $('#roomSelect').on('change', function(event) {
     app.clearMessages();
     app.fetch();
+  });
+  $('.room-button').click(function() {
+    $(this).hide();
+    $('#room-form').show();
+  });
+  $('#room-form').on('submit', (event) => {
+    event.preventDefault();
+
+    var batRoom = $('#new-room-message').val();
+    app.renderRoom(batRoom);
+
+    $('#roomSelect').val(batRoom);
+    app.clearMessages();
+    $('#new-room-message').val('');
+    $('#room-form').hide();
+    $('.room-button').show();
   });
 });

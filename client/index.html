@@ -27,9 +27,14 @@
       <h1>Bat Computer</h1>
     <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
     <div id="rooms">
-      Room:
-      <select id="roomSelect">
-      </select>
+      Room:<select id="roomSelect"></select>
+    </div>
+    <div class="add-room">
+      <button class="room-button">Add a room</button>
+      <form action="#" id="room-form" method="post">
+        <input type="text" name="message" id="new-room-message"/>
+        <!--<input type="submit" name="submit" class="submit"/>-->
+      </form>
     </div>
     <form action="#" id="send" method="post">
       <input type="text" name="message" id="message"/>
