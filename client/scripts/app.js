@@ -4,7 +4,7 @@ class ChatterClient {
   constructor() {
     this.server = 'http://parse.sfm8.hackreactor.com/chatterbox/classes/messages' + '?order=-updatedAt&limit=1000' ;
     this.$batFeed = $('#chats');
-    this.user = {users: []};
+    this.friends = [];
 
     this.init();
   }
@@ -87,6 +87,12 @@ class ChatterClient {
     // add time later
     $batSignal.append($text);
     $batSignal.addClass('chat');
+
+    if (this.friends.includes(username)) {
+      $batName.addClass('friend');
+      $($batSignal).find('.batFriend').show();
+    }
+
     this.$batFeed.prepend($batSignal);
   }
   renderRoom(batRoom) {
@@ -115,10 +121,16 @@ class ChatterClient {
   }
 
   handleUsernameClick(userNode) {
-    $('#chats').find('.username').each(function(index, node) {
-      if ($(node).data('username') === $(userNode).data('username')) {
+    var batName = $(userNode).data('username');
+
+    $('#chats').find('.username').each((index, node) => {
+      if ($(node).data('username') === batName) {
         $(node).siblings('.batFriend').fadeToggle();
         $(node).toggleClass('friend');
+      }
+      
+      if (!this.friends.includes(batName)) {
+        this.friends.push(batName);
       }
     });
   }
